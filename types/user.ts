@@ -1,6 +1,6 @@
-export interface userType {
-    firstName: string;
-    lastName: string;
-    email: string;
-    mobile: number;
-}
+export type User = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile: number;
+};

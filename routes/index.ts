@@ -1,6 +1,8 @@
 import express, { Request, Response, Router } from "express";
+import mysql, { OkPacket, QueryError, RowDataPacket } from "mysql2";
 import { connection } from "../config/db";
-import { userType } from "../types/user";
+import { User } from "../types/user";
+
 const router: Router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
@@ -10,13 +12,13 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.post("/create", (req: Request, res: Response) => {
-  const data:userType = {
+  const data: User = {
     firstName: req.body.first,
     lastName: req.body.last,
     email: req.body.email,
     mobile: req.body.mobile,
   };
-  connection.query("Insert into user set ?", data, (err, result) => {
+  connection.query("Insert into user set ?", data, (err: QueryError | null, result: OkPacket) => {
     if (err) {
       res.json({
         msg: "error",
@@ -28,11 +30,12 @@ router.post("/create", (req: Request, res: Response) => {
         data: result,
       });
     }
-  });
+  }
+  );
 });
 
 router.get("/get-details", (req: Request, res: Response) => {
-  connection.query("select * from user", (err, result) => {
+  connection.query("select * from user", (err: QueryError, result: RowDataPacket) => {
     if (err) {
       res.json({
         msg: "error",
@@ -48,42 +51,42 @@ router.get("/get-details", (req: Request, res: Response) => {
 });
 
 router.put("/update/:id", (req: Request, res: Response) => {
-  const data :userType = {
+  const data: User = {
     firstName: req.body.first,
     lastName: req.body.last,
     email: req.body.email,
     mobile: req.body.mobile,
   };
-  connection.query(`update user set ? where id=${req.params.id}`,data,(err, result) => {
-      if (err) {
-        res.json({
-          msg: "error",
-          error: err,
-        });
-      } else {
-        res.json({
-          msg: "successFully Updated User",
-          data: result,
-        });
-      }
+  connection.query(`update user set ? where id=${req.params.id}`, data, (err: QueryError | null, result: OkPacket) => {
+    if (err) {
+      res.json({
+        msg: "error",
+        error: err,
+      });
+    } else {
+      res.json({
+        msg: "successFully Updated User",
+        data: result,
+      });
     }
+  }
   );
 });
 
 router.delete("/delete/:id", (req: Request, res: Response) => {
-  connection.query(`delete from user where id=${req.params.id}`,(err, result) => {
-      if (err) {
-        res.json({
-          msg: "error",
-          error: err,
-        });
-      } else {
-        res.json({
-          msg: "SuccessFully Deleted User",
-          data: result,
-        });
-      }
+  connection.query(`delete from user where id=${req.params.id}`, (err: QueryError, result: OkPacket) => {
+    if (err) {
+      res.json({
+        msg: "error",
+        error: err,
+      });
+    } else {
+      res.json({
+        msg: "SuccessFully Deleted User",
+        data: result,
+      });
     }
+  }
   );
 });
 
